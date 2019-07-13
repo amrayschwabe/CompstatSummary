@@ -1,0 +1,3 @@
+\section{General R Hints}
+\textbf{remove missing values: } \textcolor{blue}{thuesen <- thuesen[!is.na(thuesen[,2]),]}
+\textbf{loess smoothers: } \textcolor{blue}{span <- c(0.1,0.2,0.3,0.45,0.7,1), lo <- loess(y ~ x, span=span[i])} prediction: \textcolor{blue}{predict(object=lo, x)}

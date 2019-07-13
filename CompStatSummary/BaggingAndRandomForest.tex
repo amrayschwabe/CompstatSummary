@@ -1,0 +1,14 @@
+\section{Bagging and random forests}
+Problem with trees: Suffer from high variance. To lower this, we want to average over set of observations. 
+\textbf{Bagging: } Idea: bootstrap dataset and train tree on every bootstrap, then have final prediction as average over predictions. This will improve accurracy, but interpretability is lost. $\hat f_{bag}(x)= \frac{1}{B} \sum_{b=1}^B \hat f^{*b}(x)$. Here we don't prune the trees since high variance in the single tree will be combated by having many trees. For classification, eg. use majority vote of all trees.
+\textbf{out of bag error estimation: } Idea: since trees are trained on bootstrap samples, there will always be trees that have not been trained on a particular sample. If we want to predict this sample, only let it be predicted by the trees that have not been trained on it (should be \textasciitilde $\frac{1}{3}$). Do this for all samples and get out of bag error, which is valid estimate of test error. 
+\textbf{Random forest: } Idea: like bagging, but decorrelate trees. How: when building the trees, every time a new split is done, only a random subset of predictors is considered as candidate for split. 
+\textbf{Boosting: } Like bagging, but now trees are grown sequentially. It does not use bootstrap, but a modified version of original data. Algorithm: 
+1) set $\hat f(x)$ = 0 and $r_i = y_i$ for all in in the training set.
+2) For b = 1, 2...,B repeat:
+a) Fit a tree $\hat f^b(x)$with d splines to the data weighted according to the last residual (samples that have been wrongly classified are weighter higher)
+b) add f(x) with weighted version of new tree: $ \hat f(x) \leftarrow \hat f(x) + \lambda \hat f^b(x) $
+c) update residuals $r_i <- r_i - \lambda \hat f^b(x)$
+3) output boosted model $\hat f(x) = \sum_{b=1}^B \lamda \hat f^b(x)$
+\textbf{fit random forest in R: } \textcolor{blue}{library(randomForest), train1 <- sample(1:n, n/2, replace=F), bag.boston1=randomForest(medv\textasciitilde .,data=Boston, subset=train1, mtry=13,importance=TRUE), (bag.boston1\$predicted gives predicted values based on out of bag samples) mean( (Boston\$medv[train1]-bag.boston1\$predicted)\^{}2 )} test MSE: \textcolor{blue}{yhat.bag1 = predict(bag.boston1,newdata=Boston[-train1,])
+mean( (yhat.bag1-Boston\$medv[-train1])\^{}2 ) }

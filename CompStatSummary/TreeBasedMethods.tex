@@ -1,0 +1,12 @@
+\section{Tree based methods}
+tree assumes model of following form: 
+$f(x) = \sum_{m=1}^M c_m*1_{(X \in R_m)}$, this is better than linear if highly complex relationship between features and response. 
+\textbf{Recursive binary splitting: }
+Idea: top-down greedy approach that always takes the best predictor to split some box in two. Algortihm:
+1) find the best cutting point for each predictor
+2) choose predictor which with best cutting point minimizes error ($\sum_{i:x \in R_1}(y_i-\hat y_{R_1})^2+\sum_{i:x \in R_2}(y_i-\hat y_{R_2})^2)$
+3) repeat until stopping condition, eg. each box contains < 5 elements
+\textbf{pruning: } Recursive binary splitting overfitts to training data, so we want to keep the tree simpler to have a low test error. How: we penalize large subtrees like lasso: $\sum_{m=1}{|T|}\sum_{i: x_i \in R_m}(y_i - \hat y_{R_m})^2 + \alpha|T|$. The right $\alpha$ parameter can be found via crossvalidation. 
+\textbf{classification trees: } we grow these trees very similarily to regression trees, but can't take the RSS anymore. Now we want to measure 'node purity', for that we take Gini index: $G = \sum_{k=1}^k \hat p_{mk}(1-\hat p_{mk})$ where $p_{mk}$ is the proportion in the m'th region of the kth class.
+\textbf{fit tree in R:} \textcolor{blue}{library(tree), (we want to consider classification, so turn sales into a binary variable.)
+High=ifelse(Carseats\$Sales<=8,"No","Yes"), cbind(Carseats\$Sales, High), Carseats = data.frame(Carseats,High), tree.carseats = tree(High \textasciitilde .-Sales, Carseats)} pruning of a tree: \textcolor{blue}{prune.10 <- prune.misclass(tree.carseats, best=10)} cv on tree: \textcolor{blue}{cv.boston=cv.tree(tree.boston), plot(cv.boston\$size,cv.boston\$dev,type='b')} prediction with tree: \textcolor{blue}{yhat=predict(tree.boston, newdata=Boston[-train,])}
