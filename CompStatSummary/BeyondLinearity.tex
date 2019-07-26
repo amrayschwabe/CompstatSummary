@@ -4,17 +4,33 @@ $y_i = \beta_0 + \beta_1x_i + \beta_2x_i^2 + \beta_3x_i^3 + \gamma_1(h, \xi_1) +
 spline of deg d: continuous derivative up to degree d-1
 spline of deg d with k knots: $(k+1)*(d+1)-d*k$ degrees of freedom. 
 natural spline: linear outside knots. 
-Poloynomial spline in R (uses orthogonal polynomials): \textcolor{blue}{fit=lm(wage\textasciitilde poly(age,4),data=Wage)}
-Test which degree to use: \textcolor{blue}{fit.1=lm(wage\textasciitilde age,data=Wage)
+\textbf{Poloynomial spline in R (uses orthogonal polynomials):} \begin{lstlisting}[language=R]
+fit=lm(wage~ poly(age,4),data=Wage)}
+#Test which degree to use:
+fit.1=lm(wage~age,data=Wage)
 fit.2=lm(wagepoly(age,2),data=Wage)
-fit.3=lm(wage\textasciitilde poly(age,3),data=Wage)
-fit.4=lm(wage\textasciitilde poly(age,4),data=Wage)
-fit.5=lm(wage\textasciitilde poly(age,5),data=Wage)
-anova(fit.1,fit.2,fit.3,fit.4,fit.5)} see up until which coefficient it is significant. This is same as \textcolor{blue}{round(coef(summary(fit.5b),2),4)} for orthogonal polynomials. For nonorthogonal polynomials, only use anova!
-\textbf{Smoothing splines: } $\hat g(x) = argmin \{\sum_{i=1}^n (y_i - g(x_i)\}^2 + \lambda \int g'' (x)^2 dx$. $\lambda = 0$: perfect fit \textasciitilde overfitting. $\lambda \rightarrow \inf$: no fit Splines in R: \textcolor{blue}{fit=lm(wage\textasciitilde bs(age,knots=c(25,40,60)), data=Wage)} Natural spline: \textcolor{blue}{fit2=lm(wage~ns(age,df=4), data=Wage)} Smoothing spline: \textcolor{blue}{fit=smooth.spline(age,wage,df=16) or fit2=smooth.spline(age,wage,cv=TRUE)}
+fit.3=lm(wage~ poly(age,3),data=Wage)
+fit.4=lm(wage~ poly(age,4),data=Wage)
+fit.5=lm(wage~ poly(age,5),data=Wage)
+anova(fit.1,fit.2,fit.3,fit.4,fit.5)}\end{lstlisting} see up until which coefficient it is significant. This is same as \begin{lstlisting}
+round(coef(summary(fit.5),2),4)
+\end{lstlisting} for orthogonal polynomials. For nonorthogonal polynomials, only use anova!
+\textbf{Smoothing splines: } $\hat g(x) = argmin \{\sum_{i=1}^n (y_i - g(x_i)\}^2 + \lambda \int g'' (x)^2 dx$. $\lambda = 0$: perfect fit \textasciitilde overfitting. $\lambda \rightarrow \inf$: no fit 
+\textbf{Splines in R:}
+\begin{lstlisting}[language=R] 
+fit=lm(wage~ bs(age,knots=c(25,40,60)), data=Wage)
+#Natural spline: 
+fit2=lm(wage~ns(age,df=4), data=Wage)}
+#Smoothing spline:
+fit=smooth.spline(age,wage,df=16)
+fit2=smooth.spline(age,wage,cv=TRUE)
+\end{lstlisting}
 \textbf{Generative additive model (GAM): } $y_i = \beta_0 + \sum_j^p f_j(xij) + \epsilon_i$
-when using gam, we can just put everything in one big model: \textcolor{blue}{gam1=lm(wage \textasciitilde ns(year,4)+ns(age,5)+education,data=Wage)} or with the gam library: \textcolor{blue}{Options: s() for smoothing splines, lo() for loess
-gam.m3=gam(wage~s(year,4)+s(age,5)+education, data=Wage)}
+when using gam, we can just put everything in one big model:
+\begin{lstlisting}[language=R]
+gam1=lm(wage ~ ns(year,4)+ns(age,5)+education,data=Wage) #or with the gam library: 
+#Options: s() for smoothing splines, lo() for loess
+gam.m3=gam(wage~s(year,4)+s(age,5)+education, data=Wage)\end{lstlisting}
 
 \textbf{Local regression: }
 Algorithm for local regression at X = $x_0$: 1) Gather fraction $s = \frac{k}{n}$ of training points whose $x_i$ are closest to $x_0$ 2) assign a weight $K_{i0} = K(x_i, x_0)$ to each point in this neighborhood so that the point furthest from $x_0$ has weight zero and the closest has the highest weight. All but these k nearest neighbors get weight zero. 3) fit a weighted least squares regression of the $y_i$ on the $x_i$ using the aforementioned weights, by finding $\hat \beta_0$ and $\hat \beta_1$ that minimize $\sum_{i=1}^n K_{i0}(y_i-\beta_0-\beta_1x_i)^2$ 4) the fitted value at $x_0$ is given by $\hat f(x_0) = \hat \beta_0 + \hat \beta_1 x_0$

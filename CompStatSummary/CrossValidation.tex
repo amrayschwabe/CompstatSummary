@@ -2,4 +2,6 @@
 \textbf{LOOCV} $\theta_{LOOCV} = \frac{1}{n}\sum_{i=1}^n(y_i - \hat f^{-i}(x_i))^2$
 \textbf{k-fold} $\theta_k = 1/k\sum_{i=1}^k \frac{1}{size fold}\sum_{size fold}(y_i-\hat f_k))^2$ where $f_k$ only has been trained on all folds without the k'th fold. 
 \textbf{Double crossvalidation: }Split data into training and test. Then split training again in training and test and do crossvalidation to find best model. Then test your best model on the first training/test split. 
-\textbf{get folds in R: } \textcolor{blue}{train=sample(c(1:100),100,replace=F), set.train=set[train,] set.test=set[-train,] }
+\textbf{get folds in R: } \begin{lstlisting}[language=R]
+train=sample(c(1:100),100,replace=F)
+set.train=set[train,] set.test=set[-train,] \end{lstlisting}

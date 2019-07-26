@@ -4,25 +4,33 @@ $\epsilon_i $= uncorr, indep, random $E(\epsilon_i) = 0, Var(\epsilon_i) = \sigm
 \textbf{LSE:} $\hat\beta = argmin ||Y-Xb|| = (X^TX)^{-1}X^TY \textasciitilde N(\beta,\sigma^2(X^TX)^{-1}$
 \textbf{Categorical variables with two levels: } $y_i = \beta_1 + \beta_2 x_{i2}+...+\beta_k x_{ik}+\lambda d_{is}+\epsilon_i$. So if i is in category, then: $y_i = (\beta_1+\lambda) + \beta_2x_{i2}+...+\beta_k x_{ik}+\epsilon_i$ if not then: $y_i = \beta_1 + \beta_2x_{i2}+...+\beta_k x_{ik}+\epsilon_i$. This can be interpreted as having two fitted parallel regression planes where the intercepts are different (so $E(y_i)-E(y_j) = \lambda$). If more categories, just add more dummy variables.
 \textbf{Interaction: } now the dummy variable does not only influence the intercept, but also the slope. $y_i = \beta_1 + \beta_2x_i + \lambda d_i + \delta d_i x_i + \epsilon_i$. There can also be interaction between quantitative variables (includes term $\delta x_{i2}x_{i3}$ then) or between categorical variables (includes term $\delta d_{i1}d_{i2}$ then).
-\textbf{linear model:} \textcolor{blue}{fit <- lm(y\textasciitilde x1+x2)}
-n = nr. observations, p = intercept + nr. variables. intercept: \textcolor{blue}{fit\$coef[1]} slope: \textcolor{blue}{fit\$coef[2]} prediction: \textcolor{blue}{predict(fit, pred.frame)}
+\textbf{linear model:} \begin{lstlisting}[language=R]
+fit <- lm(y~x1+x2)}
+#n = nr. observations, p = intercept + nr. variables. 
+fit$coef[1] #intercept
+fit\$coef[2] #slope 
+predict(fit, pred.frame)#prediction
+\end{lstlisting}
 \textbf{we can reproduce all values by hand: }
-\begin{inparaitem}
-\item estimates: \textcolor{blue}{(hatbeta <- XtX.inv \%*\% t(X) \%*\% y) }
-\item fitted values: \textcolor{blue}{y.hat <- X \%*\% hatbeta}
-\item residuals: \textcolor{blue}{res <- y - y.hat}
-\item residual standard error (RSE): \textcolor{blue}{(RSE <- sqrt( sum(res\^{}2)/(n-p)))}
-\item Rsquared: \textcolor{blue}{RSS <- sum( (y-y.hat)\^{}2 ),
-TSS <- sum( (y-mean(y))\^{}2 ),
-(Rsquared <- 1 - RSS/TSS) }
-\item adjusted Rsquared: \textcolor{blue}{(Rsquared.adj <- 1 - (RSS/(n-p))/(TSS/(n-1)))}
-\item standard error for some var (adjust indices): \textcolor{blue}{se.TV <- RSE * sqrt(XtX.inv[2,2])}
-\item t-value: \textcolor{blue}{tval.TV <- hatbeta[2] / se.TV}
-\item p-value: \textcolor{blue}{2*pt(abs(tval.TV), df=n-p, lower=FALSE)}
-\item alternative for finding p-value; compare two models with and without variable: 
-\textcolor{blue}{fit.TV.radio <- lm(sales \textasciitilde TV + radio, data=Advertising), anova(fit.TV.radio, fit.all)}
-\item F-test: \textcolor{blue}{fit.empty <- lm(sales \textasciitilde 1, data=Advertising),
-anova(fit.empty,fit.all)} 
-\item alternative F-test: \textcolor{blue}{(Ftest <- summary(fit1)\$fstatistic, 1 - pf(Ftest[1], df1 = Ftest[2], df2 = Ftest[3])}
-\end{inparaitem}
+\begin{lstlisting}[language=R]
+hatbeta <- XtX.inv %*% t(X) %*% y
+y.hat <- X %*% hatbeta
+res <- y - y.hat #residuals
+RSE <- sqrt( sum(res^2)/(n-p)) #residual standard error
+RSS <- sum( (y-y.hat)^2 ) 
+TSS <- sum( (y-mean(y))^2 )
+Rsquared <- 1 - RSS/TSS) 
+Rsquared.adj <- 1 - (RSS/(n-p))/(TSS/(n-1))
+se.TV <- RSE * sqrt(XtX.inv[2,2]) #standard error for some var (adjust indices)
+tval.TV <- hatbeta[2] / se.TV #t-value
+2*pt(abs(tval.TV), df=n-p, lower=FALSE) #p-value
+#alternative for finding p-value; compare two models with and without variable: 
+fit.TV.radio <- lm(sales ~ TV + radio, data=Advertising)
+anova(fit.TV.radio, fit.all)
+fit.empty <- lm(sales ~ 1, data=Advertising) #F-test
+anova(fit.empty,fit.all)
+#alternative F-test
+Ftest <- summary(fit1)$fstatistic 
+1 - pf(Ftest[1], df1 = Ftest[2], df2 = Ftest[3])
+\end{lstlisting}
 \textbf{Plots} if slopes are the same, then interaction, else no interaction. If x range is the same, no correlation, else there is correlation. 

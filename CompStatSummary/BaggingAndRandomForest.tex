@@ -10,5 +10,11 @@ a) Fit a tree $\hat f^b(x)$with d splines to the data weighted according to the 
 b) add f(x) with weighted version of new tree: $ \hat f(x) \leftarrow \hat f(x) + \lambda \hat f^b(x) $
 c) update residuals $r_i <- r_i - \lambda \hat f^b(x)$
 3) output boosted model $\hat f(x) = \sum_{b=1}^B \lamda \hat f^b(x)$
-\textbf{fit random forest in R: } \textcolor{blue}{library(randomForest), train1 <- sample(1:n, n/2, replace=F), bag.boston1=randomForest(medv\textasciitilde .,data=Boston, subset=train1, mtry=13,importance=TRUE), (bag.boston1\$predicted gives predicted values based on out of bag samples) mean( (Boston\$medv[train1]-bag.boston1\$predicted)\^{}2 )} test MSE: \textcolor{blue}{yhat.bag1 = predict(bag.boston1,newdata=Boston[-train1,])
-mean( (yhat.bag1-Boston\$medv[-train1])\^{}2 ) }
+\textbf{fit random forest in R: } \begin{lstlisting}[language = R]
+library(randomForest)
+train1 <- sample(1:n, n/2, replace=F)
+bag.boston1=randomForest(medv~.,data=Boston, subset=train1, mtry=13,importance=TRUE)
+outofbagprediction <- bag.boston1$predicted
+outofbagerror <-mean((boston$medv[train1]-outofbagprediction)^2)}
+testprediction = predict(bag.boston1,newdata=Boston[-train1,])
+testmse <- mean((testprediction-Boston$medv[-train1])^2) \end{lstlisting}

@@ -1,36 +1,40 @@
 \section{Permutation tests and Multiple testing}
 \textbf{Permutation Test} 1) pick a test statistic that measures some difference between the groups 2) consider all possible rearrangements of the subject into two groups to obtain permutation distribution (or in general use permutation to destroy relationship that is to be tested while keeping all other relevant structure) 3) compare observed value to permutation distribution
 \textbf{Permutation test to test global Null vs at least one variable has significant effect:}
-\textcolor{blue}{fit <- lm(y\textasciitilde X),
+\begin{lstlisting}[language=R]fit <- lm(y\textasciitilde X),
 observedF <- summary(fit)\$fstatistic[1],
 res.f <- rep(NA, 10000),
-for (i in 1:10000)\{
+for (i in 1:10000){
   y <- y[sample(1:nrow(X), nrow(X))]
-  fit.tmp <- lm(y \textasciitilde X)
-  res.f[i] <- summary(fit.tmp)\$fstatistic[1]
-\}
-pval <- (sum(observedF <= res.f, na.rm = TRUE) + 1) / (length(res.f) + 1)}
-\textbf{general permutation test, here test function is median but can be changed: } \textcolor{blue}{(observed.diff.medians <- median(asat.contr)-median(asat.treat))
+  fit.tmp <- lm(y ~X)
+  res.f[i] <- summary(fit.tmp)$fstatistic[1]
+}
+pval <- (sum(observedF <= res.f, na.rm = TRUE) + 1) / (length(res.f) + 1)\end{lstlisting}
+\textbf{general permutation test, here test function is median but can be changed: } \begin{lstlisting}[language=R]
+observed.diff.medians <- median(asat.contr)-median(asat.treat))
 median.diff.one.rep <- function(y, n1, n){
   ynew <- sample(y, n, replace=F)
   return(median(ynew[1:n1])-median(ynew[(n1+1):n]))
 }
 res.diff.medians <- replicate(nrep, median.diff.one.rep(asat\$asat, n1, n))
-(pval <- (sum(res.diff.medians<= observed.diff.medians)+1)/(nrep+1))}
+pval <- (sum(res.diff.medians<= observed.diff.medians)+1)/(nrep+1)\end{lstlisting}
 \textbf{Wilcoxon test: } $H_0: F_1 = F_2, H_A: F_1$ shifted. $W = \sum$ ranks * sign. Reject $H_0$ if |W| > critical value.
-Test is nonparametric, unpaired, robust \textcolor{blue}{wilcox.test(asat.contr, asat.treat, alternative="less")} Wilcoxon test as permutation test: \textcolor{blue}{ranks <- rank(asat\$asat)
-(observed.sum.ranks <- sum(ranks[1:n1]))
-\# nr of different group assignments:
+Test is nonparametric, unpaired, robust \begin{lstlisting}[language=R]
+wilcox.test(asat.contr, asat.treat, alternative="less")
+\end{lstlisting} \textbf{Wilcoxon test as permutation test:} \begin{lstlisting}[language=R]
+ranks <- rank(asat$asat)
+observed.sum.ranks <- sum(ranks[1:n1])
+# nr of different group assignments:
 choose(34,19)
-\# we will randomly sample nrep permutations:
+# we will randomly sample nrep permutations:
 nrep <- 100000
 wilcox.one.rep <- function(y, n1, n){
   ynew <- sample(y, n, replace=F)
   ranks.new <- rank(ynew)
   return(sum(ranks.new[1:n1]))
 }
-res.wilcox <- replicate(nrep, wilcox.one.rep(asat\$asat, n1, n))
-(pval <- (sum(res.wilcox<=observed.sum.ranks)+1)/(nrep+1))}
+res.wilcox <- replicate(nrep, wilcox.one.rep(asat$asat, n1, n))
+pval <- (sum(res.wilcox<=observed.sum.ranks)+1)/(nrep+1)\end{lstlisting}
 \textbf{Multiple Testing terminology: }
 
 $\begin{matrix}
