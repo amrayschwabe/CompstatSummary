@@ -1,6 +1,6 @@
 \section{Model Selection}
-\textbf{criteria: } Mallow's $C_p$, AIC, BIC = $2-ln(\hat L) + d*log(n)$, Adjusted $R^2$
-\textbf{ridge regression: } $\hat\beta^{ridge} = argmin ||y-XB||_2^2+ \lambda||B||_2^2$. If you draw that, circle around zero. 
+\textbf{Criteria: } Mallow's $C_p$, AIC, BIC = $2-ln(\hat L) + d*log(n)$, Adjusted $R^2$
+\textbf{Ridge regression: } $\hat\beta^{ridge} = argmin ||y-XB||_2^2+ \lambda||B||_2^2$. If you draw that, circle around zero. 
 \begin{lstlisting}[language=R]
 data(Hitters)
 Hitters=na.omit(Hitters)
@@ -10,13 +10,13 @@ y = Hitters$Salary
 grid=10^seq(from = 10, to = -2, length=100)
 ridge.mod = glmnet(x,y,alpha=0,lambda=grid)
 \end{lstlisting}
-\textbf{lasso regression: }
+\textbf{Lasso regression: }
 $\hat\beta^{lasso} = argmin ||y-XB||_2^2+ \lambda||B||_1^2$. If you draw that, diamond around zero -> will set values to zero. 
 \begin{lstlisting}[language=R]
 lasso.mod = glmnet(x[train,], y[train], alpha=1, 
                    lambda=grid, thresh=1e-12)
 \end{lstlisting}
-\textbf{best subset: }
+\textbf{Best subset: }
 1)$M_0$ null model (only sample mean)
 2) fit $p \choose k$ models with k pred. and select best $M_k$
 3) select best among $M_0 ... M_p$
@@ -24,14 +24,14 @@ lasso.mod = glmnet(x[train,], y[train], alpha=1,
 regfit.full=regsubsets(Salary~., data=Hitters,nvmax=19)
 \end{lstlisting}
 
-\textbf{forward stepwise: }
+\textbf{Forward stepwise: }
 1)$M_0$ null model (only sample mean)
 2) fit p-k models that add 1 pred and select best $M_k$
 3) select best among $M_0 ... M_p$
 \begin{lstlisting}[language=R]
 regfit.fwd=regsubsets(Salary~., data=Hitters,nvmax=19,method="forward")
 \end{lstlisting}
-\textbf{backward stepwise: }
+\textbf{Backward stepwise: }
 1) $M_p$ full model
 2) k = p, p-1, ...1,
 k models with 1 pred less, choose best $M_{k-1}$

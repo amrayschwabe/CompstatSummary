@@ -1,9 +1,15 @@
 \section{General R Hints}
-\textbf{remove missing values: } \begin{lstlisting}[language = R]
-thuesen <- thuesen[!is.na(thuesen[,2]),]
+\textbf{Remove missing values: }
+\begin{lstlisting}[language = R]
+datanew <-data[complete.cases(data),]
 \end{lstlisting}
-\textbf{loess smoothers: } \begin{lstlisting}[language = R]
+\textbf{Loess smoothers: } 
+\begin{lstlisting}[language = R]
 span <- c(0.1,0.2,0.3,0.45,0.7,1)
 lo <- loess(y ~ x, span=span[i])}
-prediction <- predict(object=lo, x)
+predict(object=lo, x) # prediction
+\end{lstlisting}
+\textbf{Set plot arrangement:}
+\begin{lstlisting}
+par(mfrow = c(2, 2))
 \end{lstlisting}

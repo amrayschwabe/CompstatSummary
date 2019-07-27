@@ -1,7 +1,8 @@
 \section{Permutation tests and Multiple testing}
 \textbf{Permutation Test} 1) pick a test statistic that measures some difference between the groups 2) consider all possible rearrangements of the subject into two groups to obtain permutation distribution (or in general use permutation to destroy relationship that is to be tested while keeping all other relevant structure) 3) compare observed value to permutation distribution
-\textbf{Permutation test to test global Null vs at least one variable has significant effect:}
-\begin{lstlisting}[language=R]fit <- lm(y\textasciitilde X),
+\textbf{Permutation test to test global Null-Hyp. vs at least one variable has significant effect:}
+\begin{lstlisting}[language=R]
+fit <- lm(y\textasciitilde X),
 observedF <- summary(fit)\$fstatistic[1],
 res.f <- rep(NA, 10000),
 for (i in 1:10000){
@@ -10,51 +11,59 @@ for (i in 1:10000){
   res.f[i] <- summary(fit.tmp)$fstatistic[1]
 }
 pval <- (sum(observedF <= res.f, na.rm = TRUE) + 1) / (length(res.f) + 1)\end{lstlisting}
-\textbf{general permutation test, here test function is median but can be changed: } \begin{lstlisting}[language=R]
+\textbf{general permutation test, here test function is median but can be changed: }
+\begin{lstlisting}[language=R]
 observed.diff.medians <- median(asat.contr)-median(asat.treat))
 median.diff.one.rep <- function(y, n1, n){
   ynew <- sample(y, n, replace=F)
   return(median(ynew[1:n1])-median(ynew[(n1+1):n]))
 }
 res.diff.medians <- replicate(nrep, median.diff.one.rep(asat\$asat, n1, n))
-pval <- (sum(res.diff.medians<= observed.diff.medians)+1)/(nrep+1)\end{lstlisting}
+pval <- (sum(res.diff.medians<= observed.diff.medians)+1)/(nrep+1)
+\end{lstlisting}
 \textbf{Wilcoxon test: } $H_0: F_1 = F_2, H_A: F_1$ shifted. $W = \sum$ ranks * sign. Reject $H_0$ if |W| > critical value.
-Test is nonparametric, unpaired, robust \begin{lstlisting}[language=R]
+Test is nonparametric, unpaired, robust 
+\begin{lstlisting}[language=R]
 wilcox.test(asat.contr, asat.treat, alternative="less")
-\end{lstlisting} \textbf{Wilcoxon test as permutation test:} \begin{lstlisting}[language=R]
-ranks <- rank(asat$asat)
-observed.sum.ranks <- sum(ranks[1:n1])
-# nr of different group assignments:
-choose(34,19)
-# we will randomly sample nrep permutations:
-nrep <- 100000
-wilcox.one.rep <- function(y, n1, n){
-  ynew <- sample(y, n, replace=F)
-  ranks.new <- rank(ynew)
-  return(sum(ranks.new[1:n1]))
+\end{lstlisting} 
+\textbf{Wilcoxon test as permutation test:} 
+\begin{lstlisting}[language=R]
+dd <- immer$Y1 - immer$Y2
+dd <- dd[dd != 0] # remove diff equal to zero
+dd.rank <- rank(abs(dd))
+dd.rank.sign <- dd.rank * sign(dd)
+(V <- sum(dd.rank.sign[dd.rank.sign > 0]))
+Wilxocon.one.permutation <- function(y){
+n <- length(y)
+signs <- sample(c(-1, 1), n, replace = TRUE)
+d <- y * signs
+d.rank <- rank(abs(d))
+d.rank.sign <- d.rank * sign(d)
+ranks.pos <- sum(d.rank.sign[d.rank.sign > 0])
+return(ranks.pos)
 }
-res.wilcox <- replicate(nrep, wilcox.one.rep(asat$asat, n1, n))
-pval <- (sum(res.wilcox<=observed.sum.ranks)+1)/(nrep+1)\end{lstlisting}
+res <- replicate(nrep, Wilxocon.one.permutation(dd))
+(pval <- (sum(res >= V) + 1) / (length(res) + 1))
+\end{lstlisting}
 \textbf{Multiple Testing terminology: }
-
 $\begin{matrix}
-& H_0 & H_a  \\
-H_0 not r & TN & FN/Type2\\
-H_0rd & FP/Type1 & TP \\
-\end{matrix}$
+& H_0 true & H_a true \\
+H_0 not rej & TN & FN/Type2\\
+H_0rej. & FP/Type1 & TP \\
+\end{matrix}$\\
 P(Type1) = P(reject H0 but H0 is true) = $\alpha$
-P(Type2) = P(not rejecting H0 when H$\alpha$ is true = $\beta$. Power = 1 -$\beta$
+P(Type2) = P(not rejecting H0 when H$\alpha$ is true) = $\beta$. Power = 1 -$\beta$
 
 $\begin{matrix}
-& H_0 & H_a & Total \\
-H_0 not r & U & T & m-R\\
-H_0rd & V & S & R \\
+& H_0 true & H_a true& Total \\
+H_0 not rej. & U & T & m-R\\
+H_0rej. & V & S & R \\
 Total & m_0 & m-m_0 & m
-\end{matrix}$
-m is fixed known, $m_0$ is fixed unknown, if m = $m_0$ then it's global null. All capital letters represent random variables, only R is observable. 
+\end{matrix}$\\
+$m$ is fixed known, $m_0$ is fixed unknown, if m = $m_0$ then it's global null. All capital letters represent random variables, only R is observable. 
 False discovery proportion(FDP) = $Q = \frac{V}{R}$ (0 if all 0)
 False discovery rate(FDR) = E(Q) 
 Family wise error rate (FWER): $P(V \geq 1)$
 $FWER \geq DFR$, $\alpha \leq FWER \leq \alpha m$ under global null: $FWER = FDR$
 \textbf{Bonferroni: } Control FWER at level $\alpha$ by conducting each test at level $\frac{\alpha}{m}$. This makes sense if tests are independent, but too sensitive if tests are dependent. 
-\textbf{Westfall Young permutation procedure: } Data matrix contains x variables and 1/0 in the y column for treatment/control. Under global null, one can permute y-values. Procedure: repeat many times; permute the y column and do a two sample test (eg. Wilcoxon) for each x column (comparing x[y==1] and x[y == 0]). Let $p_i$ be the corresponding p value. Store $min(p_1,...,p_m)$. Set $\delta$ = empirical $\alpha$-quantile of permutation distribution of $min(p_1,...,p_m)$. Reject any null hypothesis where the two-sample test on the original data has p-value $\leq \delta$. This provides weak control of FWER (ie. under the gloabl null). 
+\textbf{Westfall Young permutation procedure: } Data matrix contains x variables and 1/0 in the y column for treatment/control. Under global null, one can permute y-values. Procedure: repeat many times; permute the y column and do a two sample test (eg. Wilcoxon) for each x column (comparing x[y==1] and x[y == 0]). Let $p_i$ be the corresponding p value. Store $min(p_1,...,p_m)$. Set $\delta$ = empirical $\alpha$-quantile of permutation distribution of $min(p_1,...,p_m)$. Reject any null hypothesis where the two-sample test on the original data has p-value $\leq \delta$. This provides weak control of FWER (ie. under the global null). 

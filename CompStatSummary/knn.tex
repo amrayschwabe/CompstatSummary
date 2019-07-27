@@ -1,25 +1,24 @@
-\section{knn}
-non param method: $\hat f(x) = \frac{1}{k} = \sum_N y_i$ where N is k nearest neighbors. If underlying model is linear, knn cannot outperform linear regression.
+\section{KNN}
+Non param. method: $\hat f(x) = \frac{1}{k} = \sum_N y_i$ where N is k nearest neighbors. If underlying model is linear, KNN cannot outperform linear regression.
 \textbf{Curse of dimensionality: } Performance of linear regression deteriorates more slowly than KNN
-\textbf{K-fold crossvalidation for 1 NN classifier:} \begin{lstlisting}[language = R] cv.knn1 <- function(x,y,K,preselect=FALSE,q=10)\{}
-  #randomly shuffle the rows:
+\textbf{K-fold crossvalidation for 1 NN classifier: }
+\begin{lstlisting}[language = R]
+cv.knn1 <- function(x,y,K,preselect=FALSE,q=10){
   n <- length(y)
   ind.x <- sample(n, replace=FALSE)
   x <- x[ind.x,]
   y <- y[ind.x]
-  #create K (roughly) equally sized folds:
   folds <- cut(seq(1,n),breaks=K,labels=FALSE)
-  #perform K fold cross validation:
   error <- integer(K)
-  for(i in 1:K){}
-    #Segment data by fold using the which() function
+  for(i in 1:K)\{
     ind.test <- which(folds==i, arr.ind=TRUE)
     x.test <- x[ind.test,]
     y.test <- y[ind.test]
     x.train <- x[-ind.test,]
     y.train <- y[-ind.test]
-    y.pred <- knn1(x.train, x.test, y.train)
+    y.pred <- knn1(x.train, x.test, y.train)  
     error[i] <- sum(y.pred != y.test)
   }
   return(sum(error/n))
-} \end{lstlisting}
+}
+\end{lstlisting}
