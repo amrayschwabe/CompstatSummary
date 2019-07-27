@@ -55,4 +55,6 @@ for(i in 1:19){
  #refit model with 10 variables on full data to obtain our final best model
 regfit.best=regsubsets(Salary~., data=Hitters,nvmax=19)
 coef(regfit.best, which.min(val.errors))
+#do selection with Mallow's CP 
+best.model <- which.min(summary(regfit.best)$cp)
 \end{lstlisting}

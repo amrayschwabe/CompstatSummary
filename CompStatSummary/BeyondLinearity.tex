@@ -18,6 +18,8 @@ round(coef(summary(fit.5),2),4)
 \textbf{Smoothing splines: } $\hat g(x) = argmin \{\sum_{i=1}^n (y_i - g(x_i)\}^2 + \lambda \int g'' (x)^2 dx$. $\lambda = 0$: perfect fit \textasciitilde overfitting. $\lambda \rightarrow \inf$: no fit 
 \textbf{Splines in R:}
 \begin{lstlisting}[language=R] 
+#knots are automatically placed at empirical quantiles of nox according to the
+chosen degree of freedom
 fit=lm(wage~ bs(age,knots=c(25,40,60)), data=Wage)
 #Natural spline: 
 fit2=lm(wage~ns(age,df=4), data=Wage)}
