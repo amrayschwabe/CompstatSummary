@@ -1,12 +1,15 @@
 \section{Confidence intervals}
-\textbf{CI in R} \begin{lstlisting}[language=R]
-confint(fit) \end{lstlisting}
-\textbf{95\% CI for intercept} \begin{lstlisting}[language=R]
+\textbf{CI in R:} 
+\begin{lstlisting}[language=R]
+confint(fit)
+\end{lstlisting}
+\textbf{95\% CI for intercept by hand:} 
+\begin{lstlisting}[language=R]
 n <- nrow(thuesen)
 coef(fit)[1] - qt(.975, n-2)*.11748
 coef(fit)[1] + qt(.975, n-2)*.11748
 \end{lstlisting}
-\textbf{confidence interval for E(y0)}
+\textbf{Confidence interval for $E(y_0)$:}
 \begin{lstlisting}[language=R]
 quant <- qt(.975,n-2))
 sigma.hat <- sqrt(sum((fit$resid)^2)/(n-2))
@@ -17,7 +20,8 @@ se <- sigma.hat * sqrt( t(x00) %*% XtXi %*% x00)
 lower <- fitted - quant*se
 upper <- fitted + quant*se
 predict(fit, pred.frame, level=.95, interval="c")\end{lstlisting}
-\textbf{prediction interval ( confidence interval for $y_0$): } \begin{lstlisting}[language = R]
+\textbf{Prediction interval ( confidence interval for $y_0$):}
+\begin{lstlisting}[language = R]
 se <- sigma.hat * sqrt( 1 + t(x00) %*% XtXi %*% x00)
 lower <- fitted - quant*se
 upper <- fitted + quant*se
