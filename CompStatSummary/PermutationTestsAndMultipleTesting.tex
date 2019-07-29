@@ -73,5 +73,21 @@ Family wise error rate (FWER): $P(V \geq 1)$
 $FWER \geq DFR$, $\alpha \leq FWER \leq \alpha m$ under global null: $FWER = FDR$ \\
 \textbf{Bonferroni: } Control FWER at level $\alpha$ by conducting each test at level $\frac{\alpha}{m}$. This makes sense if tests are independent, but too sensitive if tests are dependent.  \\
 \textbf{Westfall Young permutation procedure: } Data matrix contains x variables and 1/0 in the y column for treatment/control. Under global null, one can permute y-values. Procedure: repeat many times; permute the y column and do a two sample test (eg. Wilcoxon) for each x column (comparing x[y==1] and x[y == 0]). Let $p_i$ be the corresponding p value. Store $min(p_1,...,p_m)$. Set $\delta$ = empirical $\alpha$-quantile of permutation distribution of $min(p_1,...,p_m)$. Reject any null hypothesis where the two-sample test on the original data has p-value $\leq \delta$. This provides weak control of FWER (ie. under the global null). 
+\begin{lstlisting}[language=R]
+#number of simulations
+nb <- 1000
+# vector storing the minimum pvalues
+min_pvalues <- numeric(nb)
+# main loop
+for(j in 1:nb) {
+    y_perm <- y[sample(1:length(y), size = length(y), replace = F)]
+    min_pvalues[j] <- min(apply(x, 2, function(i) chisq.test(x = y_perm,y = i)$p.value))
+  }
+# getting the delta and doing the test
+delta <- quantile(min_pvalues, probs = 0.05, type = 1)
+rejection_WY <- pvalues < delta
+table(rejection_WY)
+\end{lstlisting}
+
 \textbf{Benjamini-Hochberg}
 Let $p(1)\leq p(2) \leq ... \leq p(m)$ be ordered p-values. Let $i_0$ be the largest $i$, s.t. $p(i)\leq q\cdot i / m$. Reject all $H_{(i)}$ with $i\leq i_0$. For independent test statistics (or p-values) this controls the $\text{FDR}$ at level $q$, i.e. $\text{FDR}=q\cdot m_0 / m \leq q$.
