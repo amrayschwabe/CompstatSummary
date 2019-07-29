@@ -1,5 +1,5 @@
 \section{Permutation tests and Multiple testing}
-\textbf{Permutation Test} 1) pick a test statistic that measures some difference between the groups 2) consider all possible rearrangements of the subject into two groups to obtain permutation distribution (or in general use permutation to destroy relationship that is to be tested while keeping all other relevant structure) 3) compare observed value to permutation distribution
+\textbf{Permutation Test} 1) pick a test statistic that measures some difference between the groups 2) consider all possible rearrangements of the subject into two groups to obtain permutation distribution (or in general use permutation to destroy relationship that is to be tested while keeping all other relevant structure) 3) compare observed value to permutation distribution \\
 \textbf{Permutation test to test global Null-Hyp. vs at least one variable has significant effect:}
 \begin{lstlisting}[language=R]
 fit <- lm(y\textasciitilde X),
@@ -26,6 +26,12 @@ Test is nonparametric, unpaired, robust
 \begin{lstlisting}[language=R]
 wilcox.test(asat.contr, asat.treat, alternative="less")
 \end{lstlisting} 
+\textbf{Wilcoxon exercise}
+Let $X_1,...,X_m~F_X$ and $Y_1,...,Y_m~F_Y$ be independent. $H_0: F_X=F_Y$, $H_A: F_X(x) = F_Y(x-a) \  \forall x$ and $a>0$. Let $D_i = X_i - Y_i, i \in [1,m]$. Show that $H_0$ and $H_A$ can be written as $H_0: $ the distribution of $D$ is symmetric around $a=0$, $H_A$ the distribution of $D$ is symmetric around $a>0$.
+
+We show that the distribution of $D$ is symmetric around $a$: $P(D-a \leq d) = P(-(D-a) \leq d)$. We have $P(D-a \leq d) = P(D \leq d + a) = \int P(X-Y \leq d+a |Y=y) f_Y(y) dy = \int P(X-y \leq d+a) f_Y(y) dy = \int P(X \leq d+a+y) f_Y(y) dy = \int F_X(d+a+y)f_Y(y)dy$ We get the same when exchanging $X$ and $Y$: $P(-(D-a)\leq d) = P(-D \leq d-a) = P(Y-X \leq d-a) = \int F_Y(d-a+x)f_X(x)dx$.
+
+We can use that $F_X(x)=F_Y(x-a)$ and $f_X(x)=f_Y(x-a)$ to show: $\int F_X(d+a+y)f_Y(y)dy = \int F_Y(d+a+y-a)f_X(y+a)dy = \int F_Y(d+y)f_X(y+a)dy = \int F_Y(d-a-x)f_X(x)dx$ \\
 \textbf{Wilcoxon test as permutation test:} 
 \begin{lstlisting}[language=R]
 dd <- immer$Y1 - immer$Y2
@@ -46,24 +52,26 @@ res <- replicate(nrep, Wilxocon.one.permutation(dd))
 (pval <- (sum(res >= V) + 1) / (length(res) + 1))
 \end{lstlisting}
 \textbf{Multiple Testing terminology: }
-$\begin{matrix}
+$\begin{bmatrix}
 & H_0 true & H_a true \\
 H_0 not rej & TN & FN/Type2\\
 H_0rej. & FP/Type1 & TP \\
-\end{matrix}$\\
+\end{bmatrix}$\\
 P(Type1) = P(reject H0 but H0 is true) = $\alpha$
 P(Type2) = P(not rejecting H0 when H$\alpha$ is true) = $\beta$. Power = 1 -$\beta$
 
-$\begin{matrix}
+$\begin{bmatrix}
 & H_0 true & H_a true& Total \\
 H_0 not rej. & U & T & m-R\\
 H_0rej. & V & S & R \\
 Total & m_0 & m-m_0 & m
-\end{matrix}$\\
+\end{bmatrix}$\\
 $m$ is fixed known, $m_0$ is fixed unknown, if m = $m_0$ then it's global null. All capital letters represent random variables, only R is observable. 
 False discovery proportion(FDP) = $Q = \frac{V}{R}$ (0 if all 0)
 False discovery rate(FDR) = E(Q) 
 Family wise error rate (FWER): $P(V \geq 1)$
-$FWER \geq DFR$, $\alpha \leq FWER \leq \alpha m$ under global null: $FWER = FDR$
-\textbf{Bonferroni: } Control FWER at level $\alpha$ by conducting each test at level $\frac{\alpha}{m}$. This makes sense if tests are independent, but too sensitive if tests are dependent. 
+$FWER \geq DFR$, $\alpha \leq FWER \leq \alpha m$ under global null: $FWER = FDR$ \\
+\textbf{Bonferroni: } Control FWER at level $\alpha$ by conducting each test at level $\frac{\alpha}{m}$. This makes sense if tests are independent, but too sensitive if tests are dependent.  \\
 \textbf{Westfall Young permutation procedure: } Data matrix contains x variables and 1/0 in the y column for treatment/control. Under global null, one can permute y-values. Procedure: repeat many times; permute the y column and do a two sample test (eg. Wilcoxon) for each x column (comparing x[y==1] and x[y == 0]). Let $p_i$ be the corresponding p value. Store $min(p_1,...,p_m)$. Set $\delta$ = empirical $\alpha$-quantile of permutation distribution of $min(p_1,...,p_m)$. Reject any null hypothesis where the two-sample test on the original data has p-value $\leq \delta$. This provides weak control of FWER (ie. under the global null). 
+\textbf{Benjamini-Hochberg}
+Let $p(1)\leq p(2) \leq ... \leq p(m)$ be ordered p-values. Let $i_0$ be the largest $i$, s.t. $p(i)\leq q\cdot i / m$. Reject all $H_{(i)}$ with $i\leq i_0$. For independent test statistics (or p-values) this controls the $\text{FDR}$ at level $q$, i.e. $\text{FDR}=q\cdot m_0 / m \leq q$.

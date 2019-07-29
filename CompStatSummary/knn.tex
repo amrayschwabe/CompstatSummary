@@ -1,6 +1,6 @@
 \section{KNN}
 Non param. method: $\hat f(x) = \frac{1}{k} = \sum_N y_i$ where N is k nearest neighbors. If underlying model is linear, KNN cannot outperform linear regression.
-\textbf{Curse of dimensionality: } Performance of linear regression deteriorates more slowly than KNN
+\textbf{Curse of dimensionality: } Performance of linear regression deteriorates more slowly than KNN \\
 \textbf{K-fold crossvalidation for 1 NN classifier: }
 \begin{lstlisting}[language = R]
 cv.knn1 <- function(x,y,K,preselect=FALSE,q=10){
