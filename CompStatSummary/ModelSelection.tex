@@ -1,5 +1,16 @@
 \section{Model Selection}
 \textbf{Criteria: } Mallow's $C_p$, AIC, BIC = $2-ln(\hat L) + d*log(n)$, Adjusted $R^2$
+\begin{lstlisting}[language =R]
+fit<- regsubsets(Salary~.,data=Hitters)
+s <- summary(fit)
+best.adjr2 <- which.max(s$adjr2)
+best.cp <- which.min(s$cp)
+best.bic <- which.min(s$bic)
+\end{lstlisting}
+coefficients of best model:
+\begin{lstlisting}
+coef(best.fit, id = best.adjr2)
+\end{lstlisting}
 \textbf{Ridge regression: } $\hat\beta^{ridge} = argmin ||y-XB||_2^2+ \lambda||B||_2^2$. If you draw that, circle around zero. 
 \begin{lstlisting}[language=R]
 data(Hitters)
@@ -9,6 +20,46 @@ x = x[,-1] #remove first column (intercept)
 y = Hitters$Salary
 grid=10^seq(from = 10, to = -2, length=100)
 ridge.mod = glmnet(x,y,alpha=0,lambda=grid)
+\end{lstlisting}
+\textbf{nested crossvalidation to compare ridge and lasso}
+\begin{lstlisting}[language =R]
+k <- 10
+folds <- cut(sample(1:k,
+nrow(riboflavin$x),
+replace=T), breaks = 10, labels = F)
+# vector of prediction errors
+error.lasso <- numeric(k)
+error.ridge <- numeric(k)
+for (i in 1:k) {
+	# inner cross validation
+	inner.folds <- folds[folds != i]
+	# need to change levels of the folds
+	# to always start from 1 for cv.glmnet
+	inner.folds <- factor(inner.folds)
+	levels(inner.folds) <- 1:(k-1)
+	# run cross-validation for ridge (alpha = 0)
+	optim.lambda.ridge <- cv.glmnet(x =riboflavin$x[folds!=i,],
+	y = riboflavin$y[folds!=i],
+	foldid = as.numeric(inner.folds),alpha = 0)$lambda.min
+	# run cross-validation for lasso (alpha = 1)
+	optim.lambda.lasso <- cv.glmnet(x =riboflavin$x[folds!=i,],
+	y = riboflavin$y[folds!=i], foldid = as.numeric(inner.folds), alpha = 1)$lambda.min
+	# ridge regression (alpha = 0)
+	ridge.mod <- glmnet(x = 						riboflavin$x[folds!=i,], y = riboflavin$y[folds!=i], alpha = 0, lambda = grid)
+	# lasso regression (alpha = 1)
+	lasso.mod <- glmnet(x = riboflavin$x[folds!=i,],
+	y = riboflavin$y[folds!=i], alpha = 1, lambda = grid)
+	# prediction on hold-out fold
+	lasso.pred <- predict(lasso.mod,
+	s = optim.lambda.lasso,
+	newx = riboflavin$x[folds==i,])
+	ridge.pred <- predict(ridge.mod,
+	s = optim.lambda.ridge, newx = riboflavin$x[folds==i,])
+	error.ridge[i] <- mean((ridge.pred - riboflavin$y[folds==i])^2)
+	error.lasso[i] <- mean((lasso.pred - riboflavin$y[folds==i])^2)
+}
+mean(error.ridge)
+mean(error.lasso)
 \end{lstlisting}
 \textbf{Lasso regression: }
 $\hat\beta^{lasso} = argmin ||y-XB||_2^2+ \lambda||B||_1^2$. If you draw that, diamond around zero -> will set values to zero. 
@@ -21,7 +72,7 @@ lasso.mod = glmnet(x[train,], y[train], alpha=1,
 2) fit $p \choose k$ models with k pred. and select best $M_k$
 3) select best among $M_0 ... M_p$
 \begin{lstlisting}[language=R]
-regfit.full=regsubsets(Salary~., data=Hitters,nvmax=19)
+regfit.full=regsubsets(Salary~., data=Hitters,nvmax=length(Hitters)-1
 \end{lstlisting}
 
 \textbf{Forward stepwise: }
@@ -29,7 +80,7 @@ regfit.full=regsubsets(Salary~., data=Hitters,nvmax=19)
 2) fit p-k models that add 1 pred and select best $M_k$
 3) select best among $M_0 ... M_p$
 \begin{lstlisting}[language=R]
-regfit.fwd=regsubsets(Salary~., data=Hitters,nvmax=19,method="forward")
+regfit.fwd=regsubsets(Salary~., data=Hitters,nvmax=length(Hitters)-1,method="forward")
 \end{lstlisting}
 \textbf{Backward stepwise: }
 1) $M_p$ full model
@@ -37,7 +88,7 @@ regfit.fwd=regsubsets(Salary~., data=Hitters,nvmax=19,method="forward")
 k models with 1 pred less, choose best $M_{k-1}$
 3) select best $M_0 ... M_p$
 \begin{lstlisting}[language=R]
-regfit.bwd=regsubsets(Salary~., data=Hitters,nvmax=19,method="backward")
+regfit.bwd=regsubsets(Salary~., data=Hitters,nvmax=length(Hitters)-1,method="backward")
 \end{lstlisting}
 \textbf{Choose amongst models: }
 \begin{lstlisting}[language=R]
@@ -46,14 +97,14 @@ test=(!train)
 regfit.best = regsubsets(Salary~., data=Hitters[train,],nvmax=19)
 #compute mean squared error on test set}
 test.mat = model.matrix(Salary~., data=Hitters[test,])
-val.errors = rep(NA,19)
-for(i in 1:19){
+val.errors = rep(NA,length(Hitters)-1)
+for(i in 1:length(Hitters)-1){
   coefi = coef(regfit.best,id=i)
   pred = test.mat[,names(coefi)]%*%coefi
   val.errors[i] = mean((Hitters$Salary[test]-pred)^2)
 }
  #refit model with 10 variables on full data to obtain our final best model
-regfit.best=regsubsets(Salary~., data=Hitters,nvmax=19)
+regfit.best=regsubsets(Salary~., data=Hitters,nvmax=length(Hitters)-1)
 coef(regfit.best, which.min(val.errors))
 \end{lstlisting}
 
