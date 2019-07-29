@@ -10,9 +10,7 @@ fit=lm(wage~ poly(age,4),data=Wage)}
 fit.1=lm(wage~age,data=Wage)
 fit.2=lm(wagepoly(age,2),data=Wage)
 fit.3=lm(wage~ poly(age,3),data=Wage)
-fit.4=lm(wage~ poly(age,4),data=Wage)
-fit.5=lm(wage~ poly(age,5),data=Wage)
-anova(fit.1,fit.2,fit.3,fit.4,fit.5)}\end{lstlisting} see up until which coefficient it is significant. This is same as \begin{lstlisting}
+anova(fit.1,fit.2,fit.3)}\end{lstlisting} see up until which coefficient it is significant. This is same as \begin{lstlisting}
 round(coef(summary(fit.5),2),4)
 \end{lstlisting} for orthogonal polynomials. For nonorthogonal polynomials, only use anova! \\
 \textbf{Smoothing splines: } $\hat g(x) = argmin \{\sum_{i=1}^n (y_i - g(x_i)\}^2 + \lambda \int g'' (x)^2 dx$. $\lambda = 0$: perfect fit \textasciitilde overfitting. $\lambda \rightarrow \inf$: no fit \\
