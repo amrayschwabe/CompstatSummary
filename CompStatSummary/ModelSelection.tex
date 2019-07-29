@@ -56,3 +56,6 @@ for(i in 1:19){
 regfit.best=regsubsets(Salary~., data=Hitters,nvmax=19)
 coef(regfit.best, which.min(val.errors))
 \end{lstlisting}
+
+\textbf{Adaptive Lasso:} Lasso with penalty weights: $\hat\beta_s^{adapt.lasso}\text{argmin}_\beta RSS(\beta) + \lambda \sum_{j=1}^p w_j |\beta_j|$. Take a $\sqrt{n}$ consistent estimate $\hat\beta$ of $\beta$ (e.g. least squares Choose $\gamma>0$, then set $\hat w_j = {1}/{|\hat\beta|^\gamma}$. This asymptotically selects the right covariates and has optimal estimation rate.\\
+\textbf{Group Lasso:} Predictors are divided into $L$ groups of size $p_1, ..., p_L$s.t. $\sum p_i = p$. $\hat\beta_\lambda^{gr.lasso}=\text{argmin}_\beta RSS(\beta)+\lambda \sum_{l=1}^L \sqrt{p_l} ||\beta||_2$. (if L=p, we get Lasso). Acts like Lasso on a group level. Useful if there are categorical variables with $>2$ categories (put all corresponding dummy variables in a group).
