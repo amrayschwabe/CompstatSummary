@@ -8,8 +8,8 @@ natural spline: linear outside knots.
 fit=lm(wage~ poly(age,4),data=Wage)}
 #Test which degree to use:
 fit.1=lm(wage~age,data=Wage)
-fit.2=lm(wagepoly(age,2),data=Wage)
-fit.3=lm(wage~ poly(age,3),data=Wage)
+fit.2=lm(wage~poly(age,2),data=Wage)
+fit.3=lm(wage~poly(age,3),data=Wage)
 anova(fit.1,fit.2,fit.3)}\end{lstlisting} see up until which coefficient it is significant. This is same as \begin{lstlisting}
 round(coef(summary(fit.5),2),4)
 \end{lstlisting} for orthogonal polynomials. For nonorthogonal polynomials, only use anova! \\
@@ -17,10 +17,8 @@ round(coef(summary(fit.5),2),4)
 \textbf{Splines in R:}
 \begin{lstlisting}[language=R] 
 fit=lm(wage~ bs(age,knots=c(25,40,60)), data=Wage)
-#Natural spline: 
-fit2=lm(wage~ns(age,df=4), data=Wage)}
-#Smoothing spline:
-fit=smooth.spline(age,wage,df=16)
+fit2=lm(wage~ns(age,df=4), data=Wage)}#Natural spline
+fit=smooth.spline(age,wage,df=16)#Smoothing spline
 fit2=smooth.spline(age,wage,cv=TRUE)
 \end{lstlisting}
 \textbf{Generalized additive model (GAM): } $y_i = \beta_0 + \sum_j^p f_j(xij) + \epsilon_i$

@@ -15,15 +15,11 @@ High=ifelse(Carseats\$Sales<=8,"No","Yes")
 cbind(Carseats\$Sales, High)
 Carseats = data.frame(Carseats,High)
 tree.carseats = tree(High ~ .-Sales, Carseats)}
-#regression tree: 
-tree(formula = Sales ~., data = Carseats.train)} 
-#pruning of a tree:
-prune.10 <- prune.misclass(tree.carseats, best=10)
-#cv on tree: 
-cv.boston=cv.tree(tree.boston)
+tree(formula = Sales ~., data = Carseats.train)}#regression tree
+prune.10 <- prune.misclass(tree.carseats, best=10) #pruning tree
+cv.boston=cv.tree(tree.boston) #cv on tree
 plot(cv.boston$size,cv.boston$dev,type='b')
 best.size <- cv.boston$size[which.min (cv.boston\$dev)]
 #pruning to best size (found by cv): 
  pruned.boston <- prune.tree(tree.boston, best = best.size)
-#prediction with tree: 
-yhat=predict(tree.boston, newdata=Boston[-train,])  \end{lstlisting}
+yhat=predict(tree.boston, newdata=Boston[-train,]) #pred with tree \end{lstlisting}
