@@ -27,14 +27,11 @@ k <- 10
 folds <- cut(sample(1:k,
 nrow(riboflavin$x),
 replace=T), breaks = 10, labels = F)
-# vector of prediction errors
-error.lasso <- numeric(k)
-error.ridge <- numeric(k)
+error.lasso <- numeric(k) # vector of prediction errors
+error.ridge <- numeric(k) # vector of prediction errors
 for (i in 1:k) {
-	# inner cross validation
-	inner.folds <- folds[folds != i]
-	# need to change levels of the folds
-	# to always start from 1 for cv.glmnet
+	inner.folds <- folds[folds != i]# inner cross validation
+	#change levels of the folds to always start from 1 for cv.glmnet
 	inner.folds <- factor(inner.folds)
 	levels(inner.folds) <- 1:(k-1)
 	# run cross-validation for ridge (alpha = 0)
@@ -56,8 +53,7 @@ for (i in 1:k) {
 	ridge.pred <- predict(ridge.mod,
 	s = optim.lambda.ridge, newx = riboflavin$x[folds==i,])
 	error.ridge[i] <- mean((ridge.pred - riboflavin$y[folds==i])^2)
-	error.lasso[i] <- mean((lasso.pred - riboflavin$y[folds==i])^2)
-}
+	error.lasso[i] <- mean((lasso.pred - riboflavin$y[folds==i])^2)}
 mean(error.ridge)
 mean(error.lasso)
 \end{lstlisting}
@@ -101,8 +97,7 @@ val.errors = rep(NA,length(Hitters)-1)
 for(i in 1:length(Hitters)-1){
   coefi = coef(regfit.best,id=i)
   pred = test.mat[,names(coefi)]%*%coefi
-  val.errors[i] = mean((Hitters$Salary[test]-pred)^2)
-}
+  val.errors[i] = mean((Hitters$Salary[test]-pred)^2)}
  #refit model with 10 variables on full data to obtain our final best model
 regfit.best=regsubsets(Salary~., data=Hitters,nvmax=length(Hitters)-1)
 coef(regfit.best, which.min(val.errors))

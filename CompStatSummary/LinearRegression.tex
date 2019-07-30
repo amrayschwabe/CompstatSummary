@@ -29,7 +29,8 @@ fit.TV.radio <- lm(sales ~ TV + radio, data=Advertising)  # alternative for find
 anova(fit.TV.radio, fit.all)}
 fit.empty <- lm(y ~ 1, data=x.frame)# F-test
 anova(fit.empty,fit.all)} 
-(Ftest.alt <- summary(fit1)$fstatistic, p.val <- 1 - pf(Ftest[1], df1 = Ftest[2], df2 = Ftest[3]) # alternative F-Test
+Ftest.alt <- summary(fit1)$fstatistic
+p.val <- 1 - pf(Ftest[1], df1 = Ftest[2], df2 = Ftest[3]) # alternative F-Test
 s<-summary(fit1) se1<-coef[``x1",``Std. Error"] # alternative for t-value 
 beta1<-coef[``x1",``Estimate"] 
 t.val.alt <-beta1/se1

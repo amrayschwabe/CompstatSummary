@@ -25,6 +25,5 @@ predict(fit, pred.frame, level=.95, interval="c")\end{lstlisting}
 se <- sigma.hat * sqrt( 1 + t(x00) %*% XtXi %*% x00)
 lower <- fitted - quant*se
 upper <- fitted + quant*se
-#or automatically: 
-predict(fit, pred.frame, level=.95, interval="p")
+predict(fit, pred.frame, level=.95, interval="p")#or automatically
 \end{lstlisting}

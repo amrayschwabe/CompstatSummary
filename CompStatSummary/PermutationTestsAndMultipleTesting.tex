@@ -2,29 +2,19 @@
 \textbf{Permutation Test} 1) pick a test statistic that measures some difference between the groups 2) consider all possible rearrangements of the subject into two groups to obtain permutation distribution (or in general use permutation to destroy relationship that is to be tested while keeping all other relevant structure) 3) compare observed value to permutation distribution \\
 \textbf{Permutation test to test global Null-Hyp. vs at least one variable has significant effect:}
 \begin{lstlisting}[language=R]
-fit <- lm(y\textasciitilde X),
-observedF <- summary(fit)\$fstatistic[1],
+fit <- lm(y~ X),
+observedF <- summary(fit)$fstatistic[1] #always thing to compare to
 res.f <- rep(NA, 10000),
 for (i in 1:10000){
   y <- y[sample(1:nrow(X), nrow(X))]
   fit.tmp <- lm(y ~X)
-  res.f[i] <- summary(fit.tmp)$fstatistic[1]
-}
-pval <- (sum(observedF <= res.f, na.rm = TRUE) + 1) / (length(res.f) + 1)\end{lstlisting}
-\textbf{general permutation test, here test function is median but can be changed: }
-\begin{lstlisting}[language=R]
-observed.diff.medians <- median(asat.contr)-median(asat.treat))
-median.diff.one.rep <- function(y, n1, n){
-  ynew <- sample(y, n, replace=F)
-  return(median(ynew[1:n1])-median(ynew[(n1+1):n]))
-}
-res.diff.medians <- replicate(nrep, median.diff.one.rep(asat\$asat, n1, n))
-pval <- (sum(res.diff.medians<= observed.diff.medians)+1)/(nrep+1)
-\end{lstlisting}
+  res.f[i] <- summary(fit.tmp)$fstatistic[1]} #calculate same thing for permutations
+pval <- (sum(observedF <= res.f, na.rm = TRUE) + 1) / (length(res.f) + 1)#see how many permutations larger/smaller than orig\end{lstlisting}
+
 \textbf{Wilcoxon test: } $H_0: F_1 = F_2, H_A: F_1$ shifted. $W = \sum$ ranks * sign. Reject $H_0$ if |W| > critical value.
 Test is nonparametric, unpaired, robust 
 \begin{lstlisting}[language=R]
-wilcox.test(asat.contr, asat.treat, alternative="less")
+wilcox.test(control-treat, alternative="greater")
 \end{lstlisting} 
 \textbf{Wilcoxon exercise}
 Let $X_1,...,X_m~F_X$ and $Y_1,...,Y_m~F_Y$ be independent. $H_0: F_X=F_Y$, $H_A: F_X(x) = F_Y(x-a) \  \forall x$ and $a>0$. Let $D_i = X_i - Y_i, i \in [1,m]$. Show that $H_0$ and $H_A$ can be written as $H_0: $ the distribution of $D$ is symmetric around $a=0$, $H_A$ the distribution of $D$ is symmetric around $a>0$.
@@ -34,22 +24,19 @@ We show that the distribution of $D$ is symmetric around $a$: $P(D-a \leq d) = P
 We can use that $F_X(x)=F_Y(x-a)$ and $f_X(x)=f_Y(x-a)$ to show: $\int F_X(d+a+y)f_Y(y)dy = \int F_Y(d+a+y-a)f_X(y+a)dy = \int F_Y(d+y)f_X(y+a)dy = \int F_Y(d-a-x)f_X(x)dx$ \\
 \textbf{Wilcoxon test as permutation test:} 
 \begin{lstlisting}[language=R]
-dd <- immer$Y1 - immer$Y2
-dd <- dd[dd != 0] # remove diff equal to zero
-dd.rank <- rank(abs(dd))
-dd.rank.sign <- dd.rank * sign(dd)
-(V <- sum(dd.rank.sign[dd.rank.sign > 0]))
-Wilxocon.one.permutation <- function(y){
-n <- length(y)
-signs <- sample(c(-1, 1), n, replace = TRUE)
-d <- y * signs
-d.rank <- rank(abs(d))
-d.rank.sign <- d.rank * sign(d)
-ranks.pos <- sum(d.rank.sign[d.rank.sign > 0])
-return(ranks.pos)
-}
-res <- replicate(nrep, Wilxocon.one.permutation(dd))
-(pval <- (sum(res >= V) + 1) / (length(res) + 1))
+nr_permutations <- 100000
+dd <- immer$Y1-immer$Y2
+dd <-dd[dd != 0]
+ranks <- rank(abs(dd))
+V <- sum(ranks[sign(dd) >0])
+stats <- rep(NA, nr_permutations)
+for(i in 1:nr_permutations){
+  signs <- sample(c(-1,1), length(dd), replace = TRUE)
+  dd_s <- dd*signs
+  ranks <- rank(abs(dd_s))
+  stats[i] <- sum(ranks[sign(dd_s)>0])}
+(sum(stats >= V)+1)/(length(stats)+1)
+
 \end{lstlisting}
 \textbf{Multiple Testing terminology: }
 $\begin{bmatrix}
@@ -59,7 +46,32 @@ H_0rej. & FP/Type1 & TP \\
 \end{bmatrix}$\\
 P(Type1) = P(reject H0 but H0 is true) = $\alpha$
 P(Type2) = P(not rejecting H0 when H$\alpha$ is true) = $\beta$. Power = 1 -$\beta$
+\textbf{Simulation test to assess power and type 1. error rate of global F test (power calc with certrain betavalues as alternative)}
 
+\begin{lstlisting}[language = R]
+n <- 20
+x <- seq(from = -25, to = 30, length.out = n)
+n.sim <- 250
+results.power <- numeric(n.sim)
+results.typeI <- numeric(n.sim)
+for(i in 1:n.sim){
+  err <- 15 * (rgamma(n, shape = 2, rate = 1) - 2) #simul response
+  y <- 0.5 * x + -0.003 * x^2 + 0.0001 * x^3 + err
+  dat1 <- data.frame(y = y, x = x)
+  # Result of global F-test. For every data set, we check whether the global null hypothesis is being rejected or not.
+  fit1 <- lm(y ~ x + I(x^2) + I(x^3), data = dat1)
+  Ftest1 <- summary(fit1)$fstatistic
+  pval1 <- 1 - pf(Ftest1[1], df1 = Ftest1[2], df2 = Ftest1[3])
+  results.power[i] <- pval1 < 0.05
+  # Result of global F-test under H_0.For every data set simulated under H_0, we check whether the F-test is rejected.
+  fit2 <- lm(y ~ x + I(x^2) + I(x^3),
+             data = data.frame(y = err, x = x))
+  Ftest2 <- summary(fit2)$fstatistic
+  pval2 <- 1 - pf(Ftest2[1], df1 = Ftest2[2], df2 = Ftest2[3])
+  results.typeI[i] <- pval2 < 0.05}
+mean(results.typeI) # type I error
+mean(results.power) # power
+\end{lstlisting}
 $\begin{bmatrix}
 & H_0 true & H_a true& Total \\
 H_0 not rej. & U & T & m-R\\
@@ -74,16 +86,11 @@ $FWER \geq DFR$, $\alpha \leq FWER \leq \alpha m$ under global null: $FWER = FDR
 \textbf{Bonferroni: } Control FWER at level $\alpha$ by conducting each test at level $\frac{\alpha}{m}$. This makes sense if tests are independent, but too sensitive if tests are dependent.  \\
 \textbf{Westfall Young permutation procedure: } Data matrix contains x variables and 1/0 in the y column for treatment/control. Under global null, one can permute y-values. Procedure: repeat many times; permute the y column and do a two sample test (eg. Wilcoxon) for each x column (comparing x[y==1] and x[y == 0]). Let $p_i$ be the corresponding p value. Store $min(p_1,...,p_m)$. Set $\delta$ = empirical $\alpha$-quantile of permutation distribution of $min(p_1,...,p_m)$. Reject any null hypothesis where the two-sample test on the original data has p-value $\leq \delta$. This provides weak control of FWER (ie. under the global null). 
 \begin{lstlisting}[language=R]
-#number of simulations
-nb <- 1000
-# vector storing the minimum pvalues
-min_pvalues <- numeric(nb)
-# main loop
-for(j in 1:nb) {
+nr_simulations <- 1000
+min_pvalues <- numeric(nr_simulatons)
+for(j in 1:nr_simulations) {
     y_perm <- y[sample(1:length(y), size = length(y), replace = F)]
-    min_pvalues[j] <- min(apply(x, 2, function(i) chisq.test(x = y_perm,y = i)$p.value))
-  }
-# getting the delta and doing the test
+    min_pvalues[j] <- min(apply(x, 2, function(i) chisq.test(x = y_perm,y = i)$p.value))  }
 delta <- quantile(min_pvalues, probs = 0.05, type = 1)
 rejection_WY <- pvalues < delta
 table(rejection_WY)
