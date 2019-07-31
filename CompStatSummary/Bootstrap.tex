@@ -12,8 +12,8 @@ $\hat{\theta} \cong$ Var. Estimate on original data, $\hat{\theta}^\star \cong$ 
 \begin{lstlisting}[language=R]
 res <- rep(NA, R)
 for (i in 1:R) {
-  x <- rgamma(n = len.b, shape = fit.gamma\$estimate["shape"],
-              rate = fit.gamma\$estimate["rate"])
+  x <- rgamma(n = len.b, shape = fit.gamma$estimate["shape"],
+              rate = fit.gamma$estimate["rate"])
   res[i] <- quantile(x, probs = 0.75)}}
 \end{lstlisting}
 \textbf{Non-param Bootstrap by hand:}
@@ -23,26 +23,19 @@ for (i in 1:R) {
   ind <- sample(1:len.b, len.b, replace = TRUE)
   res2[i] <- quantile(boogg[ind], probs = 0.75)}
 \end{lstlisting}
-
-\textbf{Non-param. Bootstrap with library: } 
-\begin{lstlisting}[language=R]
-boot.fn=function(data,index){
-  return(coef(lm(y~x,data=data,subset=index)))}
-boot.fit <- boot(datapoints, statistic=boot.fn, R=5000)
-boot.fit$t0 #estimate on original data
-boot.fit$t  #estimates on bootstrap samples
-boot.ci(boot.fit, index=c(1), type="basic") # CI
-\end{lstlisting}
-\textbf{Param. Bootstrap with library:} 
+\textbf{Param./NonParam Bootstrap with library:} 
 \begin{lstlisting}[language=R]
 fun.theta <- function(x, ind) {quantile(x[ind], probs = 0.75)}
 fun.gen <- function(x, mle) {
   rgamma(length(x), shape = mle[1], rate = mle[2])}
-boot.res <- boot(datapoints, fun.theta, R = R, sim = "parametric", ran.gen = fun.gen, mle = fit.gamma\$estimate)
+fit.gamma <-fitdistr(boogg, "gamma") #parametric distr
+boot.parametric <- boot(datapoints, statistic = fun.theta, R = nr_bootsamples, sim = "parametric", ran.gen = fun.gen, mle = fit.gamma$estimate) #parametric bootstrap
+boot.nonparametric <- boot(datapoints, statistic=fun.theta, R=nr_bootsamples)#nonparam bootstrap
+boot.ci(boot.out = boot.parametric, type = c("norm", "basic", "perc")) #all confidence intervals, norm = normal, basic = quantile, perc = reversed quantile
 \end{lstlisting}
 \textbf{Bootstrap CI by hand:}
 \begin{lstlisting}[language=R]
-quantile.CI <- quantile(theta.star, probs = c(0.025, 0.975))
-normal.CI <- c(theta.hat - qnorm(0.975) * sd(theta.star), theta.hat + qnorm(0.975) * sd(theta.star))
-reversed.CI <- theta.hat - quantile(theta.star - theta.hat, probs = c(0.975, 0.025))
+quantile.CI <- quantile(bootstrap.theta, probs = c(0.025, 0.975))
+normal.CI <- c(originial.theta - qnorm(0.975) * sd(bootstrap.theta), originial.theta + qnorm(0.975) * sd(bootstrap.theta))
+reversed.CI <- originial.theta - quantile(bootstrap.theta - originial.theta, probs = c(0.975, 0.025))
 \end{lstlisting}
