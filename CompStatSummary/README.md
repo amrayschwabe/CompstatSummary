@@ -1,2 +1,0 @@
-# CompStatSummary
-Work in progress!
