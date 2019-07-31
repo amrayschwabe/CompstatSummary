@@ -38,7 +38,7 @@ for(i in 1:nr_permutations){
 (sum(stats >= V)+1)/(length(stats)+1)
 
 \end{lstlisting}
-\textbf{Multiple Testing terminology: }
+\textbf{Multiple Testing terminology:}
 $\begin{bmatrix}
 & H_0 true & H_a true \\
 H_0 not rej & TN & FN/Type2\\
@@ -46,7 +46,7 @@ H_0rej. & FP/Type1 & TP \\
 \end{bmatrix}$\\
 P(Type1) = P(reject H0 but H0 is true) = $\alpha$
 P(Type2) = P(not rejecting H0 when H$\alpha$ is true) = $\beta$. Power = 1 -$\beta$
-\textbf{Simulation test to assess power and type 1. error rate of global F test (power calc with certrain betavalues as alternative)}
+\textbf{Simulation test to assess power and type 1. error rate of global F test (power calc with certain betavalues as alternative)}
 
 \begin{lstlisting}[language = R]
 n <- 20
