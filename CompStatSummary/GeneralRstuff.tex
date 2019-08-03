@@ -5,11 +5,14 @@ datanew <-data[complete.cases(data),]
 \end{lstlisting}
 \textbf{Loess smoothers: } 
 \begin{lstlisting}[language = R]
-span <- c(0.1,0.2,0.3,0.45,0.7,1)
-lo <- loess(y ~ x, span=span[i])}
+lo <- loess(y ~ x, span=0.3)}
 predict(object=lo, x) # prediction
 \end{lstlisting}
 \textbf{Set plot arrangement:}
-\begin{lstlisting}
+\begin{lstlisting}[language = R]
 par(mfrow = c(2, 2))
+plot(fit, which = 1) #turkey ascombe, should be evenly distributed
+plot(fit, which = 2) #QQ plot, should be on line
+plot(fit, which = 3) #scale-location, should be evenly distr. (if not, no heteroscedasticity)
+plot(fit, which = 4) #cooks distance, should be all ~the same
 \end{lstlisting}

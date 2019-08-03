@@ -19,7 +19,7 @@ x00 <- as.matrix(c(1,x0),nrow=2)
 se <- sigma.hat * sqrt( t(x00) %*% XtXi %*% x00)
 lower <- fitted - quant*se
 upper <- fitted + quant*se
-predict(fit, pred.frame, level=.95, interval="c")\end{lstlisting}
+predict(fit, pred.frame, level=.95, interval="c")#make sure that naming when doing pred.frame = data.frame(..) is same as in lm!!\end{lstlisting}
 \textbf{Prediction interval ( confidence interval for $y_0$):}
 \begin{lstlisting}[language = R]
 se <- sigma.hat * sqrt( 1 + t(x00) %*% XtXi %*% x00)

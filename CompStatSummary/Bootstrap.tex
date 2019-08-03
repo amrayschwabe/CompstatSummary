@@ -1,5 +1,6 @@
 \section{Bootstrap}
 $\hat{\theta} \cong$ Var. Estimate on original data, $\hat{\theta}^\star \cong$ Estimate on bootstraped data, $R \cong$ \# of bootstrap samples
+Meaning of the interval: 1-$\alpha$ = P(left bound < $\theta $< right bound)
 \textbf{Bootstrap consistency: }$P(a_n(\hat\Theta_n-\Theta) \leq x)-P^*(a_n(\hat\Theta_n^*-\hat\Theta_n \leq x) \rightarrow^p 0$ as $n \rightarrow \inf$ implication of that: for large n, we have that distribution of $a_n(\hat\Theta_n - \Theta_n)$ is like $a_n(\hat\Theta^*_n- \hat\Theta_n)$
 \textbf{Quantile}: $[q_{\hat\theta_n^*}(\frac{\alpha}{2}),q_{\hat\theta_n^*}(1-\frac{\alpha}{2})]$
 \textbf{Normal: }$\hat\Theta_n \frac{+}{} q_Z(1-\frac{\alpha}{2}\hat{sd}(\hat\Theta_n)$, where $Z \textasciitilde N(0,1), \hat{sd}(\hat \Theta_n) = \sqrt{\hat{Var}^*(\hat{\Theta}_n^*}$ this one is intuitive but "wrong way around"

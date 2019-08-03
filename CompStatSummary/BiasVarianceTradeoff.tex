@@ -1,5 +1,5 @@
 \section{Bias Variance Tradeoff}
- \textbf{Training MSE:} $\frac{1}{n} \sum (y_i-\hat f(x_i))^2 $ \textbf{Test MSE:} $y_0 - \hat f(x_o))^2$ \textbf{Expected test MSE:} $E(y_0- \hatf(x_0))^2 = bias(\hat f(x_0))^2 + Var(\hat f(x_0)) + \sigma^2$
+ \textbf{Training MSE:} $\frac{1}{n} \sum (y_i-\hat f(x_i))^2 $ \textbf{Test MSE:} $y_0 - \hat f(x_o))^2$ \textbf{Expected test MSE:} $E(y_0- \hat f(x_0))^2 = bias(\hat f(x_0))^2 + Var(\hat f(x_0)) + \sigma^2$ where $\text{Bias}^2(\hat f(x_0)) = (f(x_0)-E[\hat f(x_0)])^2$
  \begin{lstlisting}[language=R]
  bias <- mean(Estimates) - EstimateTrueTestMSE 
  var <- var(Estimates)
