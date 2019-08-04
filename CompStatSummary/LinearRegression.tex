@@ -1,6 +1,6 @@
 \section{Linear Regression}\textbf{Equation: }$u_i = \sum_1^D \beta_j x_{ij} + \epsilon_i$
 $\epsilon_i $= uncorr, indep, random $E(\epsilon_i) = 0, Var(\epsilon_i) = \sigma^2$ \\
-\textbf{LSE:} $\hat\beta = argmin ||Y-Xb|| = (X^TX)^{-1}X^TY \textasciitilde\\ N(\beta,\sigma^2(X^TX)^{-1}$ 
+\textbf{LSE:} $\hat\beta = argmin ||Y-Xb|| = (X^TX)^{-1}X^TY  \textasciitilde\\ N(\beta,\sigma^2(X^TX)^{-1})$ 
 \textbf{Categorical variables with two levels: } $y_i = \beta_1 + \beta_2 x_{i2}+...+\beta_k x_{ik}+\lambda d_{is}+\epsilon_i$. So if i is in category, then: $y_i = (\beta_1+\lambda) + \beta_2x_{i2}+...+\beta_k x_{ik}+\epsilon_i$ if not then: $y_i = \beta_1 + \beta_2x_{i2}+...+\beta_k x_{ik}+\epsilon_i$. This can be interpreted as having two fitted parallel regression planes where the intercepts are different (so $E(y_i)-E(y_j) = \lambda$). If more categories, just add more dummy variables. \\
 \textbf{Interaction:} Now the dummy variable does not only influence the intercept, but also the slope. $y_i = \beta_1 + \beta_2x_i + \lambda d_i + \delta d_i x_i + \epsilon_i$. There can also be interaction between quantitative variables (includes term $\delta x_{i2}x_{i3}$ then) or between categorical variables (includes term $\delta d_{i1}d_{i2}$ then). \\
 \textbf{Linear model:} \begin{lstlisting}[language=R]
@@ -11,10 +11,10 @@ fit$coef[2] #slope
 predict(fit, pred.frame) # prediction
 \end{lstlisting}
 \textbf{Calculations by hand:}
-\begin{lstlisting}[language=R]
+m\begin{lstlisting}[language=R]
 XtX.inv<-solve(crossprod(X)) # Make sure that first column of X are 1's)
 beta.hat<-XtX.inv%*%t(X)%*%y # estimates
-y.hat<-X %*% beta.hat # fitted values
+y.hat<-X %*% beta.hat # fitted values, or residuals(fit)
 res<-y-y.hat # residuals
 RSE<-sqrt(sum(res**2)/(n-p)) # residual std. error (RSE)
 RSS<-sum((y-y.hat)**2)
@@ -23,17 +23,19 @@ Rsquared<-1-RSS/TSS
 Rsquared.adj<-1-(RSS/(n-p))/(TSS/(n-1)) # adjusted Rsquared
 se<-RSE*sqrt(XtX.inv[i,i]) # std. error for beta_i
 t_i<-beta.hat[i] / se # t-value
+#alternative for t_value and se
+coef<-summary(fit1)$coefficients
+se1<-coef["x1","Std. Error"]
+beta1<-coef["x1","Estimate"]
+t1<-beta1/se1
 p.val <- 2*pt(abs(t_i),df=n-p, lower=FALSE) # p-value 
 p.val.alt <- 2*pt(-abs(t_i),df=n-p) # p-value alternative
-fit.TV.radio <- lm(sales ~ TV + radio, data=Advertising)  # alternative for finding p-value; compare two models with and without variable
+flit.TV.radio <- lm(sales ~ TV + radio, data=Advertising)  # alternative for finding p-value; compare two models with and without variable
 anova(fit.TV.radio, fit.all)}
 fit.empty <- lm(y ~ 1, data=x.frame)# F-test
 anova(fit.empty,fit.all)} 
 Ftest.alt <- summary(fit1)$fstatistic
 p.val <- 1 - pf(Ftest[1], df1 = Ftest[2], df2 = Ftest[3]) # alternative F-Test
-s<-summary(fit1) se1<-coef[``x1",``Std. Error"] # alternative for t-value 
-beta1<-coef[``x1",``Estimate"] 
-t.val.alt <-beta1/se1
 \end{lstlisting}
 \textbf{Plots} if slopes are not the same, then interaction, else interaction. If x range is the same, no correlation, else there is correlation.
 \textbf{R Summary} if predictor is NA -> linear dependent with others (too many predictors)

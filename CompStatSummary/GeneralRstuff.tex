@@ -11,7 +11,7 @@ predict(object=lo, x) # prediction
 \textbf{Set plot arrangement:}
 \begin{lstlisting}[language = R]
 par(mfrow = c(2, 2))
-plot(fit, which = 1) #turkey ascombe, should be evenly distributed
+plot(fit, which = 1) #turkey ascombe, should be evenly distributed (same amount positive and negative->otherwise not normally distributed, straight lane ->otherwise expected value depends on x, if eg. beginning all dots close to line and end not, it's non constant variance)
 plot(fit, which = 2) #QQ plot, should be on line
 plot(fit, which = 3) #scale-location, should be evenly distr. (if not, no heteroscedasticity)
 plot(fit, which = 4) #cooks distance, should be all ~the same
