@@ -1,6 +1,6 @@
 \section{Beyond Linearity}
 \textbf{regression splines: } 
-$y_i = \beta_0 + \beta_1x_i + \beta_2x_i^2 + \beta_3x_i^3 + \gamma_1(h, \xi_1) + ... + \gamma_k(h, \xi_k) + \epsilon_i$.
+$y_i = \beta_0 + \beta_1x_i + \beta_2x_i^2 + \beta_3x_i^3 + h_1(x, \xi_1) + ... + h_k(x, \xi_k) + \epsilon_i$. Where $h(x, \xi_i) = (x-\xi_i)^3_+$
 spline of deg d: continuous derivative up to degree d-1
 spline of deg d with k knots: $(k+1)*(d+1)-d*k$ degrees of freedom. 
 natural spline: linear outside knots. 

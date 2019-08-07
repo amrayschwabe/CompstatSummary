@@ -37,5 +37,5 @@ anova(fit.empty,fit.all)}
 Ftest.alt <- summary(fit1)$fstatistic
 p.val <- 1 - pf(Ftest[1], df1 = Ftest[2], df2 = Ftest[3]) # alternative F-Test
 \end{lstlisting}
-\textbf{Plots} if slopes are not the same, then interaction, else interaction. If x range is the same, no correlation, else there is correlation.
+\textbf{Plots} if slopes are not the same, then interaction, else no interaction. If x range is the same, no correlation, else there is correlation.
 \textbf{R Summary} if predictor is NA -> linear dependent with others (too many predictors)

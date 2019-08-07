@@ -68,7 +68,7 @@ lasso.mod = glmnet(x[train,], y[train], alpha=1,
 2) fit $p \choose k$ models with k pred. and select best $M_k$
 3) select best among $M_0 ... M_p$
 \begin{lstlisting}[language=R]
-regfit.full=regsubsets(Salary~., data=Hitters,nvmax=length(Hitters)-1
+regfit.full=regsubsets(Salary~., data=Hitters,nvmax=length(Hitters)-1, method = "exhaustive")
 \end{lstlisting}
 
 \textbf{Forward stepwise: }
