@@ -1,6 +1,7 @@
 \section{Bootstrap}
-$\hat{\theta} \cong$ Var. Estimate on original data, $\hat{\theta}^\star \cong$ Estimate on bootstraped data, $R \cong$ \# of bootstrap samples
-Meaning of the interval: 1-$\alpha$ = P(left bound < $\theta $< right bound)
+$\hat{\theta} \cong$ Var. Estimate on original data, $\hat{\theta}^\star \cong$ Estimate on bootstraped data, $R \cong$ \# of bootstrap samples \\
+\textbf{Meaning of the interval:} 1-$\alpha$ = P(lBound < $\theta $< rBound)\\
+\textbf{Symmetric distribution:} $-q(1-\alpha) = q(\alpha) $ \\
 \textbf{Bootstrap consistency: }$P(a_n(\hat\Theta_n-\Theta) \leq x)-P^*(a_n(\hat\Theta_n^*-\hat\Theta_n \leq x) \rightarrow^p 0$ as $n \rightarrow \inf$ implication of that: for large n, we have that distribution of $a_n(\hat\Theta_n - \Theta_n)$ is like $a_n(\hat\Theta^*_n- \hat\Theta_n)$
 \textbf{Quantile}: $[q_{\hat\theta_n^*}(\frac{\alpha}{2}),q_{\hat\theta_n^*}(1-\frac{\alpha}{2})]$
 \textbf{Normal: }$\hat\Theta_n \frac{+}{} q_Z(1-\frac{\alpha}{2}\hat{sd}(\hat\Theta_n)$, where $Z \textasciitilde N(0,1), \hat{sd}(\hat \Theta_n) = \sqrt{\hat{Var}^*(\hat{\Theta}_n^*)}$ this one is intuitive but "wrong way around"
@@ -32,7 +33,7 @@ fun.gen <- function(x, mle) {
 fit.gamma <-fitdistr(boogg, "gamma") #parametric distr
 boot.parametric <- boot(datapoints, statistic = fun.theta, R = nr_bootsamples, sim = "parametric", ran.gen = fun.gen, mle = fit.gamma$estimate) #parametric bootstrap
 boot.nonparametric <- boot(datapoints, statistic=fun.theta, R=nr_bootsamples)#nonparam bootstrap
-boot.ci(boot.out = boot.parametric, type = c("norm", "basic", "perc")) #all confidence intervals, norm = normal, basic = quantile, perc = reversed quantile
+boot.ci(boot.out = boot.parametric, type = c("norm", "basic", "perc")) #all confidence intervals, norm = normal, basic = reversed quantile, perc =  quantile, stud = bootstrap T
 \end{lstlisting}
 \textbf{Bootstrap CI by hand:}
 \begin{lstlisting}[language=R]

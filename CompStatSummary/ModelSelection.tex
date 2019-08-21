@@ -24,9 +24,7 @@ ridge.mod = glmnet(x,y,alpha=0,lambda=grid)
 \textbf{nested crossvalidation to compare ridge and lasso}
 \begin{lstlisting}[language =R]
 k <- 10
-folds <- cut(sample(1:k,
-nrow(riboflavin$x),
-replace=T), breaks = 10, labels = F)
+folds <- sample(cut(1:nrow(riboflavin$x), breaks =k, labels = F), nrow(riboflavin$x), replace = F)
 error.lasso <- numeric(k) # vector of prediction errors
 error.ridge <- numeric(k) # vector of prediction errors
 for (i in 1:k) {
@@ -42,16 +40,13 @@ for (i in 1:k) {
 	optim.lambda.lasso <- cv.glmnet(x =riboflavin$x[folds!=i,],
 	y = riboflavin$y[folds!=i], foldid = as.numeric(inner.folds), alpha = 1)$lambda.min
 	# ridge regression (alpha = 0)
-	ridge.mod <- glmnet(x = 						riboflavin$x[folds!=i,], y = riboflavin$y[folds!=i], alpha = 0, lambda = grid)
+	ridge.mod <- glmnet(x = riboflavin$x[folds!=i,], y = riboflavin$y[folds!=i], alpha = 0, lambda = grid)
 	# lasso regression (alpha = 1)
 	lasso.mod <- glmnet(x = riboflavin$x[folds!=i,],
 	y = riboflavin$y[folds!=i], alpha = 1, lambda = grid)
 	# prediction on hold-out fold
-	lasso.pred <- predict(lasso.mod,
-	s = optim.lambda.lasso,
-	newx = riboflavin$x[folds==i,])
-	ridge.pred <- predict(ridge.mod,
-	s = optim.lambda.ridge, newx = riboflavin$x[folds==i,])
+	lasso.pred <- predict(lasso.mod,s = optim.lambda.lasso,newx = riboflavin$x[folds==i,])
+	ridge.pred <- predict(ridge.mod,s = optim.lambda.ridge, newx = riboflavin$x[folds==i,])
 	error.ridge[i] <- mean((ridge.pred - riboflavin$y[folds==i])^2)
 	error.lasso[i] <- mean((lasso.pred - riboflavin$y[folds==i])^2)}
 mean(error.ridge)
@@ -88,6 +83,7 @@ regfit.bwd=regsubsets(Salary~., data=Hitters,nvmax=length(Hitters)-1,method="bac
 \end{lstlisting}
 \textbf{Choose amongst models: }
 \begin{lstlisting}[language=R]
+require(leaps)
 train=sample (c(TRUE,FALSE), nrow(Hitters),replace=TRUE)
 test=(!train)
 regfit.best = regsubsets(Salary~., data=Hitters[train,],nvmax=19)

@@ -11,15 +11,15 @@ Idea: top-down greedy approach that always takes the best predictor to split som
 
 \textbf{fit tree in R:}\begin{lstlisting}[language=R] library(tree)
 #we want to consider classification, so turn sales into a binary variable
-High=ifelse(Carseats\$Sales<=8,"No","Yes")
-cbind(Carseats\$Sales, High)
+High=ifelse(Carseats$Sales<=8,"No","Yes")
+cbind(Carseats$Sales, High)
 Carseats = data.frame(Carseats,High)
 tree.carseats = tree(High ~ .-Sales, Carseats)}
 tree(formula = Sales ~., data = Carseats.train)}#regression tree
 prune.10 <- prune.misclass(tree.carseats, best=10) #pruning tree
 cv.boston=cv.tree(tree.boston) #cv on tree
 plot(cv.boston$size,cv.boston$dev,type='b')
-best.size <- cv.boston$size[which.min (cv.boston\$dev)]
+best.size <- cv.boston$size[which.min (cv.boston$dev)]
 #pruning to best size (found by cv): 
  pruned.boston <- prune.tree(tree.boston, best = best.size)
 yhat=predict(tree.boston, newdata=Boston[-train,]) #pred with tree \end{lstlisting}

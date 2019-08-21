@@ -16,7 +16,7 @@ cv.knn1 <- function(x,y,K,preselect=FALSE,q=10){
     y.test <- y[ind.test]
     x.train <- x[-ind.test,]
     y.train <- y[-ind.test]
-    y.pred <- knn1(x.train, x.test, y.train)  
+    y.pred <- knn(x.train, x.test, y.train, k = 1)  
     error[i] <- sum(y.pred != y.test)
   }
   return(sum(error/n))

@@ -1,7 +1,9 @@
 \section{Linear Regression}\textbf{Equation: }$u_i = \sum_1^D \beta_j x_{ij} + \epsilon_i$
 $\epsilon_i $= uncorr, indep, random $E(\epsilon_i) = 0, Var(\epsilon_i) = \sigma^2$ \\
 \textbf{LSE:} $\hat\beta = argmin ||Y-Xb|| = (X^TX)^{-1}X^TY  \textasciitilde\\ N(\beta,\sigma^2(X^TX)^{-1})$ 
-\textbf{Categorical variables with two levels: } $y_i = \beta_1 + \beta_2 x_{i2}+...+\beta_k x_{ik}+\lambda d_{is}+\epsilon_i$. So if i is in category, then: $y_i = (\beta_1+\lambda) + \beta_2x_{i2}+...+\beta_k x_{ik}+\epsilon_i$ if not then: $y_i = \beta_1 + \beta_2x_{i2}+...+\beta_k x_{ik}+\epsilon_i$. This can be interpreted as having two fitted parallel regression planes where the intercepts are different (so $E(y_i)-E(y_j) = \lambda$). If more categories, just add more dummy variables. \\
+\textbf{Categorical variables with two levels: } $y_i = \beta_1 + \beta_2 x_{i2}+...+\beta_k x_{ik}+\lambda d_{is}+\epsilon_i$. So if i is in category, then: $y_i = (\beta_1+\lambda) + \beta_2x_{i2}+...+\beta_k x_{ik}+\epsilon_i$ if not then: $y_i = \beta_1 + \beta_2x_{i2}+...+\beta_k x_{ik}+\epsilon_i$. This can be interpreted as having two fitted parallel regression planes where the intercepts are different (so $E(y_i)-E(y_j) = \lambda$). If more categories, just add more dummy variables. Example to extract dummy: \begin{lstlisting}[language = R]
+a1 = (levels(data)[1] == data)*1
+\end{lstlisting}\\
 \textbf{Interaction:} Now the dummy variable does not only influence the intercept, but also the slope. $y_i = \beta_1 + \beta_2x_i + \lambda d_i + \delta d_i x_i + \epsilon_i$. There can also be interaction between quantitative variables (includes term $\delta x_{i2}x_{i3}$ then) or between categorical variables (includes term $\delta d_{i1}d_{i2}$ then). \\
 \textbf{Linear model:} \begin{lstlisting}[language=R]
 fit <- lm(y~x1+x2)}
@@ -14,8 +16,8 @@ predict(fit, pred.frame) # prediction
 m\begin{lstlisting}[language=R]
 XtX.inv<-solve(crossprod(X)) # Make sure that first column of X are 1's)
 beta.hat<-XtX.inv%*%t(X)%*%y # estimates
-y.hat<-X %*% beta.hat # fitted values, or residuals(fit)
-res<-y-y.hat # residuals
+y.hat<-X %*% beta.hat # fitted values
+res<-y-y.hat # residuals, or residuals(fit)
 RSE<-sqrt(sum(res**2)/(n-p)) # residual std. error (RSE)
 RSS<-sum((y-y.hat)**2)
 TSS<-sum((y-mean(y))**2)
@@ -30,7 +32,7 @@ beta1<-coef["x1","Estimate"]
 t1<-beta1/se1
 p.val <- 2*pt(abs(t_i),df=n-p, lower=FALSE) # p-value 
 p.val.alt <- 2*pt(-abs(t_i),df=n-p) # p-value alternative
-flit.TV.radio <- lm(sales ~ TV + radio, data=Advertising)  # alternative for finding p-value; compare two models with and without variable
+fit.TV.radio <- lm(sales ~ TV + radio, data=Advertising)  # alternative for finding p-value; compare two models with and without variable
 anova(fit.TV.radio, fit.all)}
 fit.empty <- lm(y ~ 1, data=x.frame)# F-test
 anova(fit.empty,fit.all)} 
